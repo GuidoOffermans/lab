@@ -23,7 +23,7 @@ jobs:
       - name: Setup SSH Key
         run: |
           echo "${{ secrets.HETZNER_BOX_KEY }}" > hetzner_box_key
-          chmod 600 hetzner_box_key name: Setup SSH Key
+          chmod 600 hetzner_box_key
 
       - name: SSH to Hetzner Box
         run: |
