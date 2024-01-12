@@ -14,7 +14,7 @@ variable "nomad_server_count" {
 variable "nomad_client_count" {
   type        = number
   description = "Number of clients to create"
-  default     = 1
+  default     = 2
 }
 
 variable "enable_nomad_acls" {
