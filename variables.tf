@@ -20,7 +20,7 @@ variable "nomad_client_count" {
 variable "enable_nomad_acls" {
   type        = bool
   description = "Bootstrap Nomad with ACLs"
-  default     = true
+  default     = false
 }
 
 variable "apt_consul_version" {

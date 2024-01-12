@@ -58,6 +58,8 @@ jobs:
           export TF_LOG=DEBUG
           terraform plan
         continue-on-error: true
+        env:
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
 
       - name: Upload Terraform State with rsync
         run: |
