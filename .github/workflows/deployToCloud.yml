@@ -27,6 +27,7 @@ jobs:
 
       - name: SSH to Hetzner Box
         run: |
+          cat hetzner_box_key
           ssh -i hetzner_box_key -p23
           ls -all
 
