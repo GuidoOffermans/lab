@@ -1,0 +1,27 @@
+terraform {
+  required_providers {
+    hcloud = {
+      source = "hetznercloud/hcloud"
+    }
+  }
+}
+
+provider "hcloud" {
+  token = var.hcloud_token
+}
+
+provider "nomad" {
+  address = "http://${hcloud_server.server[0].ipv4_address}:4646"
+  region  = "global"
+}
+
+resource "nomad_job" "fabio" {
+  depends_on = [null_resource.nomad_servers_post_script, null_resource.nomad_clients_post_script]
+  jobspec    = file("${path.module}/jobs/fabio.hcl")
+}
+
+resource "nomad_job" "test" {
+  depends_on = [null_resource.nomad_servers_post_script, null_resource.nomad_clients_post_script]
+  jobspec    = file("${path.module}/jobs/test.hcl")
+}
+
