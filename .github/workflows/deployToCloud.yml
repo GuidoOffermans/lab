@@ -36,10 +36,7 @@ jobs:
 
       - name: Download Terraform State with rsync
         run: |
-          rsync -avz -e "ssh -i hetzner_box_key -p23" ${USER}@${HOST}:./terraform.tfstate .
-        env:
-          USER: ${{ secrets.HETZNER_BOX_USER }}
-          HOST: ${{ secrets.HETZNER_BOX_HOST }}
+          rsync -avz -e "ssh -i hetzner_box_key -p23" ${{ secrets.HETZNER_BOX_USER }}@${{ secrets.HETZNER_BOX_HOST }}:./terraform.tfstate .
 
       - name: Terraform Apply
         env:
@@ -50,10 +47,7 @@ jobs:
 
       - name: Upload Terraform State with rsync
         run: |
-          rsync -avz -e "ssh -i hetzner_box_key -p23" ./terraform.tfstate ${USER}@${HOST}:./
-        env:
-          USER: ${{ secrets.HETZNER_USER }}
-          HOST: ${{ secrets.HETZNER_HOST }}
+          rsync -avz -e "ssh -i hetzner_box_key -p23" ./terraform.tfstate ${{ secrets.HETZNER_USER }}@${{ secrets.HETZNER_HOST }}:./
 
       # Output IP addresses for clients and servers
       # - name: Output Client IPs
