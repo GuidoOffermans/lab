@@ -20,9 +20,14 @@ jobs:
         with:
           terraform_version: 1.5.7
 
+      - name: Setup SSH Key
+        run: |
+          echo "${{ secrets.HETZNER_BOX_KEY }}" > hetzner_box_key
+          chmod 600 hetzner_box_key
+
       - name: Download Terraform State with rsync
         run: |
-          rsync -avz -e "ssh -i ${{ secrets.HETZNER_BOX_KEY }} -p23" ${USER}@${HOST}:./terraform.tfstate .
+          rsync -avz -e "ssh -i hetzner_box_key -p23" ${USER}@${HOST}:./terraform.tfstate .
         env:
           USER: ${{ secrets.HETZNER_BOX_USER }}
           HOST: ${{ secrets.HETZNER_BOX_HOST }}
@@ -36,7 +41,7 @@ jobs:
 
       - name: Upload Terraform State with rsync
         run: |
-          rsync -avz -e "ssh -i ${{ secrets.HETZNER_BOX_KEY }} -p23" ./terraform.tfstate ${USER}@${HOST}:./
+          rsync -avz -e "ssh -i hetzner_box_key -p23" ./terraform.tfstate ${USER}@${HOST}:./
         env:
           USER: ${{ secrets.HETZNER_USER }}
           HOST: ${{ secrets.HETZNER_HOST }}
