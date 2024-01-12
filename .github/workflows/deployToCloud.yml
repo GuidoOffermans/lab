@@ -23,7 +23,12 @@ jobs:
       - name: Setup SSH Key
         run: |
           echo "${{ secrets.HETZNER_BOX_KEY }}" > hetzner_box_key
-          chmod 600 hetzner_box_key
+          chmod 600 hetzner_box_key- name: Setup SSH Key
+
+      - name: SSH to Hetzner Box
+        run: |
+          ssh -i hetzner_box_key -p23
+          ls -all
 
       - name: Download Terraform State with rsync
         run: |
