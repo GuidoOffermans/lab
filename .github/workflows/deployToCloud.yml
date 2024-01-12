@@ -28,7 +28,7 @@ jobs:
       - name: Setup SSH Known Hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -p 23 -H [hostname] >> ~/.ssh/known_hosts
+          ssh-keyscan -p 23 -H ${{ secrets.HETZNER_BOX_HOST }} >> ~/.ssh/known_hosts
 
       - name: SSH to Hetzner Box
         run: |
