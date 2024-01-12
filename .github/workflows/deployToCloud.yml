@@ -46,7 +46,7 @@ jobs:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
         run: |
           terraform init
-          terraform plan -auto-approve
+          terraform plan
 
       - name: Upload Terraform State with rsync
         run: |
