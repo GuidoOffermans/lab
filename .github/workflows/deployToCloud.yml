@@ -27,11 +27,7 @@ jobs:
 
       - name: SSH to Hetzner Box
         run: |
-          ssh -i hetzner_box_key -p23 ${USER}@${HOST} "ls -all"
-
-        env:
-          USER: ${{ secrets.HETZNER_BOX_USER }}
-          HOST: ${{ secrets.HETZNER_BOX_HOST }}
+          ssh -i hetzner_box_key -p23 ${{ secrets.HETZNER_BOX_USER }}@${{ secrets.HETZNER_BOX_HOST }} "ls -all"
 
       - name: Download Terraform State with rsync
         run: |
