@@ -54,7 +54,9 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan
+        run: |
+          export TF_LOG=DEBUG
+          terraform plan
         continue-on-error: true
 
       - name: Upload Terraform State with rsync
