@@ -71,14 +71,15 @@ jobs:
 
       - name: Extract Specific Outputs
         run: |
-          grep 'client_ips' plan-output.txt > outputs.txt
-          grep 'server_ips' plan-output.txt >> outputs.txt
+          awk '/client_ips/{flag=1; next} /]/{flag=0} flag' plan-output.txt > outputs.txt
+          awk '/server_ips/{flag=1; next} /]/{flag=0} flag' plan-output.txt >> outputs.txt
 
-      - name: Base64 Encode and Set Output
-        id: encode
+      - name: Base64 Encode Outputs
         run: |
           echo "encoded_string=$(base64 -w 0 outputs.txt)" >> $GITHUB_ENV
-          echo "::set-output name=encoded_string::$(base64 -w 0 outputs.txt)"
+
+      - name: Set Job Output
+        run: echo "encoded_string=$(base64 -w 0 outputs.txt)" >> $GITHUB_OUTPUT
     outputs:
       encoded_string: ${{ steps.encode.outputs.encoded_string }}
 
@@ -90,9 +91,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Base64 Decode and Use Output File
+      - name: Use Outputs from Terraform Job
         run: |
-          echo "${{ needs.terraform.outputs.encoded_string }}" | base64 --decode > outputs.txt
+          encoded_string="${{ needs.terraform.outputs.encoded_string }}"
+          echo "$encoded_string" | base64 --decode > outputs.txt
           cat outputs.txt
 
       - name: create hosts file
