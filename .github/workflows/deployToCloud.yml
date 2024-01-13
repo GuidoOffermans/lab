@@ -76,6 +76,7 @@ jobs:
 
       - name: Base64 Encode Outputs
         run: |
+          cat outputs.txt
           echo "encoded_string=$(base64 -w 0 outputs.txt)" >> $GITHUB_ENV
 
       - name: Set Job Output
