@@ -69,10 +69,15 @@ jobs:
       - name: Echo Terraform Plan Output
         run: cat plan-output.txt
 
-      - name: Extract Specific Outputs
+      - name: Extract and Format Specific Outputs
         run: |
-          awk '/client_ips/{flag=1; next} /]/{flag=0} flag' plan-output.txt > outputs.txt
-          awk '/server_ips/{flag=1; next} /]/{flag=0} flag' plan-output.txt >> outputs.txt
+          awk '/client_ips/{flag=1; next} /]/{flag=0} flag' plan-output.txt | tr -d '," +' > client_ips.txt
+          awk '/server_ips/{flag=1; next} /]/{flag=0} flag' plan-output.txt | tr -d '," +' > server_ips.txt
+          echo "clients" > outputs.txt
+          cat client_ips.txt >> outputs.txt
+          echo "" >> outputs.txt
+          echo "servers" >> outputs.txt
+          cat server_ips.txt >> outputs.txt
 
       - name: Base64 Encode Outputs
         run: |
@@ -100,10 +105,7 @@ jobs:
 
       - name: create hosts file
         run: |
-          echo '[clients]' > hosts.ini
-          grep 'client_ips' ../terraform/plan-output.txt >> hosts
-          echo '[servers]' >> hosts.ini
-          grep 'server_ips' ../terraform/plan-output.txt >> hosts
+          cp outputs.txt hosts.ini
           cat hosts.ini
 
       # - name: Output Server IPs
