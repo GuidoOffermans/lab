@@ -99,8 +99,7 @@ jobs:
 
       - name: Use Outputs from Terraform Job
         run: |
-          encoded_string="${{ needs.terraform.outputs.encoded_string }}"
-          echo "$encoded_string" | base64 --decode > outputs.txt
+          echo "${{ needs.terraform.outputs.encoded_string }}" | base64 --decode > outputs.txt
           cat outputs.txt
 
       - name: create hosts file
