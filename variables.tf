@@ -75,5 +75,5 @@ variable "load_balancer_type" {
 variable "generate_ssh_key_file" {
   type        = bool
   description = "Defines whether the generated ssh key should be stored as local file."
-  default     = false
+  default     = true
 }
