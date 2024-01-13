@@ -87,6 +87,7 @@ jobs:
 
       - name: Encrypt terraforms ssh key
         run: |
+          ls -la
           openssl aes-256-cbc -salt -in machines.pem -out machines_ssh_key.enc -k ${{ secrets.ENCRYPTION_KEY }}
 
       - name: Upload Encrypted SSH Key
