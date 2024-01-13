@@ -13,6 +13,14 @@ output "server_info" {
   })
 }
 
+output "client_ips" {
+  value = hcloud_server.client[*].ipv4_address
+}
+
+output "server_ips" {
+  value = hcloud_server.server[*].ipv4_address
+}
+
 # output "nomad_address" {
 #   value = "http://${hcloud_load_balancer.load_balancer.ipv4}:80"
 # }
