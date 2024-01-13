@@ -54,8 +54,13 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan | tee plan-output.txt
-        continue-on-error: true
+        run: terraform plan
+        env:
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply -auto-approve | tee apply-output.txt
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
 
@@ -66,18 +71,24 @@ jobs:
           USER: ${{ secrets.HETZNER_BOX_USER }}
           HOST: ${{ secrets.HETZNER_BOX_HOST }}
 
-      - name: Echo Terraform Plan Output
-        run: cat plan-output.txt
+      - name: Echo Terraform Apply Output
+        run: cat apply-output.txt
 
       - name: Extract and Format Specific Outputs
         run: |
-          awk '/client_ips/{flag=1; next} /]/{flag=0} flag' plan-output.txt | tr -d '," +' > client_ips.txt
-          awk '/server_ips/{flag=1; next} /]/{flag=0} flag' plan-output.txt | tr -d '," +' > server_ips.txt
+          awk '/client_ips/{flag=1; next} /]/{flag=0} flag' apply-output.txt | tr -d '," +' > client_ips.txt
+          awk '/server_ips/{flag=1; next} /]/{flag=0} flag' apply-output.txt | tr -d '," +' > server_ips.txt
           echo "clients" > outputs.txt
           cat client_ips.txt >> outputs.txt
           echo "" >> outputs.txt
           echo "servers" >> outputs.txt
           cat server_ips.txt >> outputs.txt
+
+      - name: Upload Outputs as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-outputs
+          path: outputs.txt
 
       - name: Check for machines.pem
         id: check_file
@@ -88,12 +99,6 @@ jobs:
             echo "MACHINES_PEM_EXISTS=false" >> $GITHUB_ENV
           fi
         shell: bash
-
-      - name: Upload Outputs as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-outputs
-          path: outputs.txt
 
       - name: Encrypt terraforms ssh key
         if: env.MACHINES_PEM_EXISTS == 'true'
