@@ -146,7 +146,7 @@ jobs:
 
       - name: Decrypt SSH Key
         run: |
-          openssl aes-256-cbc -d -in machines_ssh_key.enc -out machines_ssh_key -k ${{ secrets.ENCRYPTION_KEY }}
+          openssl aes-256-cbc -d -in machines_ssh_key.enc -out machines_ssh_key -k ${{ secrets.ENCRYPTION_KEY }} -pbkdf2
           chmod 600 machines_ssh_key
 
       # - name: Output Server IPs
