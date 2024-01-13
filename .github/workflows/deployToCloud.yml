@@ -79,6 +79,14 @@ jobs:
           echo "servers" >> outputs.txt
           cat server_ips.txt >> outputs.txt
 
+      - name: Check for machines.pem
+        id: check_file
+        run: |
+          if [ -f machines.pem ]; then
+            echo "MACHINES_PEM_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "MACHINES_PEM_EXISTS=false" >> $GITHUB_ENV
+
       - name: Upload Outputs as Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -86,11 +94,13 @@ jobs:
           path: outputs.txt
 
       - name: Encrypt terraforms ssh key
+        if: env.MACHINES_PEM_EXISTS == 'true'
         run: |
           ls -la
           openssl aes-256-cbc -salt -in machines.pem -out machines_ssh_key.enc -k ${{ secrets.ENCRYPTION_KEY }}
 
       - name: Upload Encrypted SSH Key
+        if: env.MACHINES_PEM_EXISTS == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ssh-key
