@@ -25,6 +25,6 @@ output "server_ips" {
 #   value = "http://${hcloud_load_balancer.load_balancer.ipv4}:80"
 # }
 
-# output "network_id" {
-#   value = hcloud_network.network.id
-# }
+output "network_id" {
+  value = hcloud_network.network.id
+}
