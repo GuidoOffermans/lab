@@ -54,9 +54,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: |
-          export TF_LOG=DEBUG
-          terraform plan
+        run: terraform plan
         continue-on-error: true
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
@@ -69,9 +67,9 @@ jobs:
           HOST: ${{ secrets.HETZNER_BOX_HOST }}
 
       # Output IP addresses for clients and servers
-      # - name: Output Client IPs
-      #   id: client_ips
-      #   run: echo "::set-output name=client_ips::$(terraform output -raw client_ips)"
+      - name: Output Client IPs
+        id: client_ips
+        run: echo "::set-output name=client_ips::$(terraform output -raw client_ips)"
 
       # - name: Output Server IPs
       #   id: server_ips
