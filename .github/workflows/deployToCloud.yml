@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  terraform:
     name: Run Terraform.
     runs-on: ubuntu-latest
 
@@ -69,10 +69,32 @@ jobs:
       - name: Echo Terraform Plan Output
         run: cat plan-output.txt
 
-      # Output IP addresses for clients and servers
-      - name: Output Client IPs
-        id: client_ips
-        run: echo "::set-output name=client_ips::$(terraform output -raw client_ips)"
+      - name: Extract Specific Outputs
+        run: |
+          grep 'client_ips' plan-output.txt > outputs.txt
+          grep 'server_ips' plan-output.txt >> outputs.txt
+          echo "encoded_string=$(cat outputs.txt | base64)" >> $GITHUB_OUTPUT
+
+  ansible:
+    name: Run Ansible.
+    runs-on: ubuntu-latest
+    needs: terraform
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Base64 Decode and Use Output File
+        run: |
+          echo "${{ needs.terraform.outputs.encoded_string }}" | base64 --decode > outputs.txt
+          cat outputs.txt
+
+      - name: create hosts file
+        run: |
+          echo '[clients]' > hosts.ini
+          grep 'client_ips' ../terraform/plan-output.txt >> hosts
+          echo '[servers]' >> hosts.ini
+          grep 'server_ips' ../terraform/plan-output.txt >> hosts
+          cat hosts.ini
 
       # - name: Output Server IPs
       #   id: server_ips
