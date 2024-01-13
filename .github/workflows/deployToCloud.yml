@@ -79,19 +79,11 @@ jobs:
           echo "servers" >> outputs.txt
           cat server_ips.txt >> outputs.txt
 
-      - name: Base64 Encode Outputs
-        run: |
-          cat outputs.txt
-          encoded_string=$(base64 -w 0 outputs.txt)
-          echo "encoded_string=$encoded_string" >> $GITHUB_ENV
-          echo "encoded_string=$encoded_string" >> $GITHUB_OUTPUT
-
-      - name: Set Job Output
-        run: |
-          echo "encoded_string=$(base64 -w 0 outputs.txt)" >> $GITHUB_OUTPUT
-
-    outputs:
-      encoded_string: ${{ steps.encode.outputs.encoded_string }}
+      - name: Upload Outputs as Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-outputs
+          path: outputs.txt
 
   ansible:
     name: Run Ansible.
@@ -101,13 +93,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Use Outputs from Terraform Job
-        run: |
-          encoded_string="${{ needs.terraform.outputs.encoded_string }}"
-          echo "$encoded_string" | base64 --decode > outputs.txt
+      - name: Download Outputs
+        uses: actions/download-artifact@v2
+        with:
+          name: terraform-outputs
+          path: .
 
-      - name: Verify Decoded Outputs
-        run: cat outputs.txt
+      - name: Use Outputs File
+        run: |
+          cat outputs.txt
+          # Further commands to utilize outputs.txt
 
       - name: create hosts file
         run: |
