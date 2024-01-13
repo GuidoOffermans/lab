@@ -73,7 +73,11 @@ jobs:
         run: |
           grep 'client_ips' plan-output.txt > outputs.txt
           grep 'server_ips' plan-output.txt >> outputs.txt
-          echo "encoded_string=$(cat outputs.txt | base64)" >> $GITHUB_OUTPUT
+
+      - name: Base64 Encode and Set Output
+        id: set_output
+        run: |
+          echo "encoded_string=$(base64 -w 0 outputs.txt)" >> $GITHUB_ENV
 
   ansible:
     name: Run Ansible.
