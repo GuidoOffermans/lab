@@ -6,11 +6,11 @@ resource "local_file" "private_key" {
 }
 
 resource "tls_private_key" "machines" {
-  algorithm = "RSA"
+  algorithm = "Ed25519"
 }
 
-resource "hcloud_ssh_key" "default" {
-  name       = "default"
+resource "hcloud_ssh_key" "temp_ssh_key" {
+  name       = "temp_ssh_key"
   public_key = tls_private_key.machines.public_key_openssh
 }
 

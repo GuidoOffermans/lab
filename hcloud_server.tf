@@ -12,7 +12,7 @@ resource "hcloud_server" "server" {
   server_type = var.server_type
   image       = var.image
   location    = var.location
-  ssh_keys    = [hcloud_ssh_key.default.id, data.hcloud_ssh_key.Hetzner-cloud.id]
+  ssh_keys    = [hcloud_ssh_key.temp_ssh_key.id, data.hcloud_ssh_key.Hetzner-cloud.id]
 
   labels = {
     "nomad-server" = "any"
@@ -81,7 +81,7 @@ resource "hcloud_server" "client" {
   server_type = var.server_type
   image       = var.image
   location    = var.location
-  ssh_keys    = [hcloud_ssh_key.default.id, data.hcloud_ssh_key.Hetzner-cloud.id]
+  ssh_keys    = [hcloud_ssh_key.temp_ssh_key.id, data.hcloud_ssh_key.Hetzner-cloud.id]
   labels = {
     "nomad-client" = "any"
   }
