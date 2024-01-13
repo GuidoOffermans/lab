@@ -17,10 +17,10 @@ provider "nomad" {
   region  = "global"
 }
 
-resource "nomad_job" "fabio" {
-  depends_on = [null_resource.nomad_servers_post_script, null_resource.nomad_clients_post_script]
-  jobspec    = file("${path.module}/jobs/fabio.hcl")
-}
+# resource "nomad_job" "fabio" {
+#   depends_on = [null_resource.nomad_servers_post_script, null_resource.nomad_clients_post_script]
+#   jobspec    = file("${path.module}/jobs/fabio.hcl")
+# }
 
 # resource "nomad_job" "test" {
 #   depends_on = [null_resource.nomad_servers_post_script, null_resource.nomad_clients_post_script]
