@@ -86,6 +86,7 @@ jobs:
             echo "MACHINES_PEM_EXISTS=true" >> $GITHUB_ENV
           else
             echo "MACHINES_PEM_EXISTS=false" >> $GITHUB_ENV
+          fi
         shell: bash
 
       - name: Upload Outputs as Artifact
