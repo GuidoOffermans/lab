@@ -67,8 +67,16 @@ jobs:
           HOST: ${{ secrets.HETZNER_BOX_HOST }}
 
       - run: echo ${{ steps.plan.outputs.stdout }}
+        env:
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+
       - run: echo ${{ steps.plan.outputs.stderr }}
+        env:
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+
       - run: echo ${{ steps.plan.outputs.exitcode }}
+        env:
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
 
       # Output IP addresses for clients and servers
       - name: Output Client IPs
