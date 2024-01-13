@@ -82,10 +82,14 @@ jobs:
       - name: Base64 Encode Outputs
         run: |
           cat outputs.txt
-          echo "encoded_string=$(base64 -w 0 outputs.txt)" >> $GITHUB_ENV
+          encoded_string=$(base64 -w 0 outputs.txt)
+          echo "encoded_string=$encoded_string" >> $GITHUB_ENV
+          echo "encoded_string=$encoded_string" >> $GITHUB_OUTPUT
 
       - name: Set Job Output
-        run: echo "encoded_string=$(base64 -w 0 outputs.txt)" >> $GITHUB_OUTPUT
+        run: |
+          echo "encoded_string=$(base64 -w 0 outputs.txt)" >> $GITHUB_OUTPUT
+
     outputs:
       encoded_string: ${{ steps.encode.outputs.encoded_string }}
 
@@ -99,8 +103,11 @@ jobs:
 
       - name: Use Outputs from Terraform Job
         run: |
-          echo "${{ needs.terraform.outputs.encoded_string }}" | base64 --decode > outputs.txt
-          cat outputs.txt
+          encoded_string="${{ needs.terraform.outputs.encoded_string }}"
+          echo "$encoded_string" | base64 --decode > outputs.txt
+
+      - name: Verify Decoded Outputs
+        run: cat outputs.txt
 
       - name: create hosts file
         run: |
