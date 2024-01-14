@@ -65,8 +65,9 @@
         mode: "0644"
 
     - name: Convert GPG key to keyring format
-      command:
-        cmd: gpg --dearmor /tmp/hashicorp.gpg
+      ansible.builtin.shell:
+        cmd: gpg --dearmor -o /tmp/hashicorp-archive-keyring.gpg < /tmp/hashicorp.gpg
+      args:
         creates: /tmp/hashicorp-archive-keyring.gpg
 
     - name: Move the HashiCorp keyring to the proper directory
