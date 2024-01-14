@@ -145,7 +145,7 @@ jobs:
           clients_ips="$(awk '/clients/{flag=1; next} /servers/{flag=0} flag' outputs.txt)"
           servers_ips="$(awk '/servers/{flag=1; next} /nomad_servers/{flag=0} flag' outputs.txt)"
           updated_content="[nomad_servers]\n$servers_ips\n\n[nomad_clients]\n$clients_ips\n\n[nomad_load_balancers]\n; nomad_lb.example.com\n\n[all:children]\nnomad_servers\nnomad_clients"
-          echo -e "$updated_content" > /ansible-playbook/hosts.ini
+          echo -e "$updated_content" > /ansible-playbook/inventory/hosts.ini
           cat hosts.ini
         shell: bash
 
