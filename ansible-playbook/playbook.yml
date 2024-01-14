@@ -58,15 +58,23 @@
       apt:
         update_cache: yes
 
-    - name: Download and add the HashiCorp GPG key
-      ansible.builtin.shell:
-        cmd: wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    - name: Download HashiCorp GPG key
+      get_url:
+        url: https://apt.releases.hashicorp.com/gpg
+        dest: /tmp/hashicorp.gpg
+        mode: '0644'
 
-    - name: Verify the key's fingerprint
-      ansible.builtin.command:
-        cmd: gpg --no-default-keyring --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg --fingerprint
-      register: fingerprint
-      # failed_when: "'798A EC65 4E5C 1542 8C8E 42EE AA16 FCBC A621 E701' not in fingerprint.stdout"
+    - name: Convert GPG key to keyring format
+      command:
+        cmd: gpg --dearmor /tmp/hashicorp.gpg
+        creates: /tmp/hashicorp-archive-keyring.gpg
+
+    - name: Move the HashiCorp keyring to the proper directory
+      copy:
+        src: /tmp/hashicorp-archive-keyring.gpg
+        dest: /usr/share/keyrings/hashicorp-archive-keyring.gpg
+        force: yes
+        # mode: '0644'5 4E5C 1542 8C8E 42EE AA16 FCBC A621 E701' not in fingerprint.stdout"
 
     - name: Add the HashiCorp repository
       ansible.builtin.shell:
