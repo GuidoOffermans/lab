@@ -26,10 +26,10 @@ resource "hcloud_server" "server" {
     ipv6_enabled = false
   }
 
-  user_data = templatefile("${path.module}/scripts/base_configuration.sh", {
-    CONSUL_VERSION = var.apt_consul_version
-    NOMAD_VERSION  = var.apt_nomad_version
-  })
+  # user_data = templatefile("${path.module}/scripts/base_configuration.sh", {
+  #   CONSUL_VERSION = var.apt_consul_version
+  #   NOMAD_VERSION  = var.apt_nomad_version
+  # })
 
   provisioner "remote-exec" {
     inline = [
@@ -47,29 +47,29 @@ resource "hcloud_server" "server" {
   }
 }
 
-resource "null_resource" "nomad_servers_post_script" {
-  count      = var.nomad_server_count
-  depends_on = [hcloud_server.server]
+# resource "null_resource" "nomad_servers_post_script" {
+#   count      = var.nomad_server_count
+#   depends_on = [hcloud_server.server]
 
-  connection {
-    type        = "ssh"
-    user        = "root"
-    private_key = tls_private_key.machines.private_key_openssh
-    host        = hcloud_server.server[count.index].ipv4_address
-  }
+#   connection {
+#     type        = "ssh"
+#     user        = "root"
+#     private_key = tls_private_key.machines.private_key_openssh
+#     host        = hcloud_server.server[count.index].ipv4_address
+#   }
 
-  provisioner "file" {
-    source      = "${path.module}/scripts/server_setup.sh"
-    destination = "setup.sh"
-  }
+#   provisioner "file" {
+#     source      = "${path.module}/scripts/server_setup.sh"
+#     destination = "setup.sh"
+#   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x setup.sh",
-      "./setup.sh ${count.index + 1} ${local.server_ips} ${var.nomad_server_count} ${local.ip_range} ${var.enable_nomad_acls}"
-    ]
-  }
-}
+#   provisioner "remote-exec" {
+#     inline = [
+#       "chmod +x setup.sh",
+#       "./setup.sh ${count.index + 1} ${local.server_ips} ${var.nomad_server_count} ${local.ip_range} ${var.enable_nomad_acls}"
+#     ]
+#   }
+# }
 
 
 resource "hcloud_server" "client" {
@@ -94,10 +94,10 @@ resource "hcloud_server" "client" {
     ipv6_enabled = false
   }
 
-  user_data = templatefile("${path.module}/scripts/base_configuration.sh", {
-    CONSUL_VERSION = var.apt_consul_version
-    NOMAD_VERSION  = var.apt_nomad_version
-  })
+  # user_data = templatefile("${path.module}/scripts/base_configuration.sh", {
+  #   CONSUL_VERSION = var.apt_consul_version
+  #   NOMAD_VERSION  = var.apt_nomad_version
+  # })
 
   provisioner "remote-exec" {
     inline = [
@@ -115,26 +115,26 @@ resource "hcloud_server" "client" {
   }
 }
 
-resource "null_resource" "nomad_clients_post_script" {
-  count      = var.nomad_client_count
-  depends_on = [hcloud_server.client, null_resource.nomad_servers_post_script]
+# resource "null_resource" "nomad_clients_post_script" {
+#   count      = var.nomad_client_count
+#   depends_on = [hcloud_server.client, null_resource.nomad_servers_post_script]
 
-  connection {
-    type        = "ssh"
-    user        = "root"
-    private_key = tls_private_key.machines.private_key_openssh
-    host        = hcloud_server.client[count.index].ipv4_address
-  }
+#   connection {
+#     type        = "ssh"
+#     user        = "root"
+#     private_key = tls_private_key.machines.private_key_openssh
+#     host        = hcloud_server.client[count.index].ipv4_address
+#   }
 
-  provisioner "file" {
-    source      = "${path.module}/scripts/client_setup.sh"
-    destination = "setup.sh"
-  }
+#   provisioner "file" {
+#     source      = "${path.module}/scripts/client_setup.sh"
+#     destination = "setup.sh"
+#   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x setup.sh",
-      "./setup.sh ${count.index + 1} ${local.server_ips} ${local.ip_range} ${var.enable_nomad_acls}"
-    ]
-  }
-}
+#   provisioner "remote-exec" {
+#     inline = [
+#       "chmod +x setup.sh",
+#       "./setup.sh ${count.index + 1} ${local.server_ips} ${local.ip_range} ${var.enable_nomad_acls}"
+#     ]
+#   }
+# }
