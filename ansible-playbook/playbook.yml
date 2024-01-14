@@ -36,15 +36,19 @@
         state: enabled
         default: deny
 
-    - name: Unconditionally reboot the machine with all defaults
+    - name: Check if a reboot is required.
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+        get_checksum: no
+      register: reboot_required_file
+
+    - name: Reboot the server (if required).
       ansible.builtin.reboot:
+      when: reboot_required_file.stat.exists == true
 
     - name: Remove dependencies that are no longer required.
       ansible.builtin.apt:
         autoremove: yes
-
-
-
 
 - name: Configure Server
   hosts: all
@@ -54,10 +58,11 @@
       apt:
         update_cache: yes
 
-    - name: Add HashiCorp GPG key
-      apt_key:
+    - name: Download HashiCorp GPG key
+      get_url:
         url: https://apt.releases.hashicorp.com/gpg
-        state: present
+        dest: /usr/share/keyrings/hashicorp-archive-keyring.gpg
+        mode: "0644"
 
     - name: Add HashiCorp repository
       apt_repository:
@@ -78,8 +83,6 @@
         state: present
       vars:
         nomad_version: "1.0.4"
- 
-        
 # - name: Setup Specific for Nomad Servers
 #   hosts: nomad_servers
 #   become: yes
