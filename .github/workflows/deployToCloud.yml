@@ -132,7 +132,6 @@ jobs:
         run: |
           openssl aes-256-cbc -d -in machines_ssh_key.enc -out machines_ssh_key -k ${{ secrets.ENCRYPTION_KEY }} -pbkdf2
           chmod 600 machines_ssh_key
-          cat machines_ssh_key
 
       - name: Download Outputs
         uses: actions/download-artifact@v4
