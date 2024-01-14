@@ -151,6 +151,6 @@ jobs:
 
       - name: Run Ansible Playbook
         run: |
-          ansible-playbook -i hosts.ini your-playbook.yml --private-key machines_ssh_key
+          ansible-playbook -i ansible-playbook/inventory/hosts.ini ansible-playbook/playbook.yml --private-key machines_ssh_key
         env:
           ANSIBLE_HOST_KEY_CHECKING: False
