@@ -1,6 +1,5 @@
 - name: Add hosts to known_hosts file
   hosts: all
-
   tasks:
     - name: Add hosts to known_hosts
       known_hosts:
@@ -22,39 +21,34 @@
 
 - name: Install necessary packages
   hosts: all
-
   tasks:
     - name: Install necessary packages
-    ansible.builtin.apt:
-      name:
-        - wget
-        - gpg
-        - curl
-        - coreutils
-        - jq
-      state: present
+      ansible.builtin.apt:
+        name:
+          - wget
+          - gpg
+          - curl
+          - coreutils
+          - jq
+        state: present
 
 - name: Set up UFW Firewall
   hosts: all
-
   tasks:
     - name: Set up UFW Firewall
-    ansible.builtin.ufw:
-      state: enabled
-      default: deny
-      direction: incoming
-      rule: allow
-      port: 22
-    notify: restart sshd
+      ansible.builtin.ufw:
+        state: enabled
+        default: deny
+        direction: incoming
+        rule: allow
+        port: 22
+      notify: restart sshd
 
-
-handlers:
-  - name: restart sshd
-    ansible.builtin.service:
-      name: sshd
-      state: restarted
-
-
+  handlers:
+    - name: restart sshd
+      ansible.builtin.service:
+        name: sshd
+        state: restarted
 # - name: Setup Specific for Nomad Servers
 #   hosts: nomad_servers
 #   become: yes
@@ -71,4 +65,4 @@ handlers:
 #   hosts: nomad_load_balancers
 #   become: yes
 #   tasks:
-    # Add tasks specific to Nomad load balancers here
+# Add tasks specific to Nomad load balancers here
