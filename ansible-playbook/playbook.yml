@@ -31,24 +31,23 @@
           - coreutils
           - jq
         state: present
+# - name: Set up UFW Firewall
+#   hosts: all
+#   tasks:
+#     - name: Set up UFW Firewall
+#       ansible.builtin.ufw:
+#         state: enabled
+#         default: deny
+#         direction: in
+#         rule: allow
+#         port: 22
+#       notify: restart sshd
 
-- name: Set up UFW Firewall
-  hosts: all
-  tasks:
-    - name: Set up UFW Firewall
-      ansible.builtin.ufw:
-        state: enabled
-        default: deny
-        direction: in
-        rule: allow
-        port: 22
-      notify: restart sshd
-
-  handlers:
-    - name: restart sshd
-      ansible.builtin.service:
-        name: sshd
-        state: restarted
+#   handlers:
+#     - name: restart sshd
+#       ansible.builtin.service:
+#         name: sshd
+#         state: restarted
 # - name: Setup Specific for Nomad Servers
 #   hosts: nomad_servers
 #   become: yes
