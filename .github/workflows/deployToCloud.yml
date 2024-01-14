@@ -142,12 +142,34 @@ jobs:
 
       - name: Create hosts.ini
         run: |
-          cat outputs.txt
+          echo "Reading output IPs..."
           clients_ips="$(awk '/clients/{flag=1; next} /servers/{flag=0} flag' outputs.txt)"
           servers_ips="$(awk '/servers/{flag=1; next} /nomad_servers/{flag=0} flag' outputs.txt)"
-          updated_content="[nomad_servers]\n$servers_ips\n\n[nomad_clients]\n$clients_ips\n\n[nomad_load_balancers]\n; nomad_lb.example.com\n\n[all:children]\nnomad_servers\nnomad_clients"
-          echo -e "$updated_content" > ansible-playbook/inventory/hosts.ini
-          cat ansible-playbook/inventory/hosts.ini
+
+          echo "Generating hosts.ini content..."
+          echo "[nomad_servers]" > hosts.ini
+          echo "$servers_ips" >> hosts.ini
+          echo "" >> hosts.ini
+
+          echo "[nomad_clients]" >> hosts.ini
+          echo "$clients_ips" >> hosts.ini
+          echo "" >> hosts.ini
+
+          echo "[nomad_load_balancers]" >> hosts.ini
+          echo "; nomad_lb.example.com" >> hosts.ini
+          echo "" >> hosts.ini
+
+          echo "[all:children]" >> hosts.ini
+          echo "nomad_servers" >> hosts.ini
+          echo "nomad_clients" >> hosts.ini
+          echo "" >> hosts.ini
+
+          echo "[all:vars]" >> hosts.ini
+          echo "ansible_user=root" >> hosts.ini
+
+          echo "hosts.ini created:"
+          cat hosts.ini
+          mv hosts.ini ansible-playbook/inventory/
         shell: bash
 
       - name: Run Ansible Playbook
