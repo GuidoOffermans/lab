@@ -91,14 +91,14 @@
         name: "consul={{ consul_version }}"
         state: present
       vars:
-        consul_version: "1.9.5"
+        consul_version: "1.17.1"
 
     - name: Install or update Nomad
       apt:
         name: "nomad={{ nomad_version }}"
         state: present
       vars:
-        nomad_version: "1.0.4"
+        nomad_version: "1.7.2"
 # - name: Setup Specific for Nomad Servers
 #   hosts: nomad_servers
 #   become: yes
