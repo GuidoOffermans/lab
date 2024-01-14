@@ -39,7 +39,7 @@
       ansible.builtin.ufw:
         state: enabled
         default: deny
-        direction: incoming
+        direction: in
         rule: allow
         port: 22
       notify: restart sshd
