@@ -35,6 +35,13 @@
       community.general.ufw:
         state: enabled
         default: deny
+
+    - name: Unconditionally reboot the machine with all defaults
+      ansible.builtin.reboot:
+
+    - name: Remove dependencies that are no longer required.
+      ansible.builtin.apt:
+        autoremove: yes
 # - name: Set up UFW Firewall
 #   hosts: all
 #   tasks:
