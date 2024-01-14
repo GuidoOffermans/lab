@@ -21,6 +21,10 @@
         upgrade: dist
 
 - name: Install necessary packages
+  hosts: all
+
+  tasks:
+    - name: Install necessary packages
     ansible.builtin.apt:
       name:
         - wget
@@ -31,6 +35,10 @@
       state: present
 
 - name: Set up UFW Firewall
+  hosts: all
+
+  tasks:
+    - name: Set up UFW Firewall
     ansible.builtin.ufw:
       state: enabled
       default: deny
@@ -45,3 +53,22 @@ handlers:
     ansible.builtin.service:
       name: sshd
       state: restarted
+
+
+# - name: Setup Specific for Nomad Servers
+#   hosts: nomad_servers
+#   become: yes
+#   tasks:
+#     # Add tasks specific to Nomad servers here
+
+# - name: Setup Specific for Nomad Clients
+#   hosts: nomad_clients
+#   become: yes
+#   tasks:
+#     # Add tasks specific to Nomad clients here
+
+# - name: Setup for Nomad Load Balancers
+#   hosts: nomad_load_balancers
+#   become: yes
+#   tasks:
+    # Add tasks specific to Nomad load balancers here
