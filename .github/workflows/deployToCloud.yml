@@ -104,7 +104,7 @@ jobs:
         if: env.MACHINES_PEM_EXISTS == 'true'
         run: |
           ls -la
-          openssl aes-256-cbc -salt -in machines.pem -out machines_ssh_key.enc -k ${{ secrets.ENCRYPTION_KEY }}
+          openssl aes-256-cbc -salt -in machines.pem -out machines_ssh_key.enc -k ${{ secrets.ENCRYPTION_KEY }} -pbkdf2
 
       - name: Upload Encrypted SSH Key
         if: env.MACHINES_PEM_EXISTS == 'true'
