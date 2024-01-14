@@ -142,8 +142,8 @@ jobs:
       - name: Create hosts.ini
         run: |
           echo "Reading output IPs..."
-          clients_ips="$(awk '/clients/{flag=1; next} /servers/{flag=0} flag' outputs.txt)"
-          servers_ips="$(awk '/servers/{flag=1; next} /nomad_servers/{flag=0} flag' outputs.txt)"
+          clients_ips="$(awk '/clients/{flag=1; next} /servers/{flag=0} flag && !/\(known after apply\)/' outputs.txt | sort | uniq)"
+          servers_ips="$(awk '/servers/{flag=1; next} /nomad_servers/{flag=0} flag && !/\(known after apply\)/' outputs.txt | sort | uniq)"          
 
           echo "Generating hosts.ini content..."
           echo "[nomad_servers]" > hosts.ini
@@ -173,6 +173,7 @@ jobs:
 
       - name: Run Ansible Playbook
         run: |
+          cat ansible-playbook/inventory/hosts.ini
           ansible-playbook -i ansible-playbook/inventory/hosts.ini ansible-playbook/playbook.yml --private-key machines_ssh_key
         env:
           ANSIBLE_HOST_KEY_CHECKING: False
