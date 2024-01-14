@@ -122,22 +122,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Download Outputs
-        uses: actions/download-artifact@v4
-        with:
-          name: terraform-outputs
-          path: .
-
-      - name: Use Outputs File
-        run: |
-          cat outputs.txt
-          # Further commands to utilize outputs.txt
-
-      - name: create hosts file
-        run: |
-          cp outputs.txt hosts.ini
-          cat hosts.ini
-
       - name: Download Encrypted SSH Key
         uses: actions/download-artifact@v4
         with:
@@ -148,6 +132,22 @@ jobs:
         run: |
           openssl aes-256-cbc -d -in machines_ssh_key.enc -out machines_ssh_key -k ${{ secrets.ENCRYPTION_KEY }} -pbkdf2
           chmod 600 machines_ssh_key
+
+      - name: Download Outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-outputs
+          path: .
+
+      - name: Create hosts.ini
+        run: |
+          cat outputs.txt
+          clients_ips="$(awk '/clients/{flag=1; next} /servers/{flag=0} flag' outputs.txt)"
+          servers_ips="$(awk '/servers/{flag=1; next} /nomad_servers/{flag=0} flag' outputs.txt)"
+          updated_content="[nomad_servers]\n$servers_ips\n\n[nomad_clients]\n$clients_ips\n\n[nomad_load_balancers]\n; nomad_lb.example.com\n\n[all:children]\nnomad_servers\nnomad_clients"
+          echo -e "$updated_content" > /ansible-playbook/hosts.ini
+          cat hosts.ini
+        shell: bash
 
       # - name: Output Server IPs
       #   id: server_ips
