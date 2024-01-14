@@ -62,7 +62,7 @@
       get_url:
         url: https://apt.releases.hashicorp.com/gpg
         dest: /tmp/hashicorp.gpg
-        mode: '0644'
+        mode: "0644"
 
     - name: Convert GPG key to keyring format
       command:
@@ -73,8 +73,9 @@
       copy:
         src: /tmp/hashicorp-archive-keyring.gpg
         dest: /usr/share/keyrings/hashicorp-archive-keyring.gpg
+        remote_src: yes
         force: yes
-        # mode: '0644'5 4E5C 1542 8C8E 42EE AA16 FCBC A621 E701' not in fingerprint.stdout"
+        mode: "0644"
 
     - name: Add the HashiCorp repository
       ansible.builtin.shell:
