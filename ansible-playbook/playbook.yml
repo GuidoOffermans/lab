@@ -42,23 +42,44 @@
     - name: Remove dependencies that are no longer required.
       ansible.builtin.apt:
         autoremove: yes
-# - name: Set up UFW Firewall
-#   hosts: all
-#   tasks:
-#     - name: Set up UFW Firewall
-#       ansible.builtin.ufw:
-#         state: enabled
-#         default: deny
-#         direction: in
-#         rule: allow
-#         port: 22
-#       notify: restart sshd
 
-#   handlers:
-#     - name: restart sshd
-#       ansible.builtin.service:
-#         name: sshd
-#         state: restarted
+
+
+
+- name: Configure Server
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update the package index
+      apt:
+        update_cache: yes
+
+    - name: Add HashiCorp GPG key
+      apt_key:
+        url: https://apt.releases.hashicorp.com/gpg
+        state: present
+
+    - name: Add HashiCorp repository
+      apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+        filename: hashicorp
+        state: present
+
+    - name: Install or update Consul
+      apt:
+        name: "consul={{ consul_version }}"
+        state: present
+      vars:
+        consul_version: "1.9.5"
+
+    - name: Install or update Nomad
+      apt:
+        name: "nomad={{ nomad_version }}"
+        state: present
+      vars:
+        nomad_version: "1.0.4"
+ 
+        
 # - name: Setup Specific for Nomad Servers
 #   hosts: nomad_servers
 #   become: yes
