@@ -76,8 +76,8 @@ jobs:
 
       - name: Extract and Format Specific Outputs
         run: |
-          awk '/client_ips/{flag=1; next} /]/{flag=0} flag; flag && !/\(known after apply\)/' apply-output.txt | tr -d '," +' > client_ips.txt
-          awk '/server_ips/{flag=1; next} /]/{flag=0} flag; flag && !/\(known after apply\)/' apply-output.txt | tr -d '," +' > server_ips.txt
+          awk '/client_ips/{flag=1; next} /]/{flag=0} flag; flag && !/\(known after apply\)/' apply-output.txt | tr -d '," +' | sort | uniq > client_ips.txt
+          awk '/server_ips/{flag=1; next} /]/{flag=0} flag; flag && !/\(known after apply\)/' apply-output.txt | tr -d '," +' | sort | uniq > server_ips.txt
           echo "clients" > outputs.txt
           cat client_ips.txt >> outputs.txt
           echo "" >> outputs.txt
