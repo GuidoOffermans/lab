@@ -149,19 +149,8 @@ jobs:
           cat ansible-playbook/inventory/hosts.ini
         shell: bash
 
-      # - name: Output Server IPs
-      #   id: server_ips
-      #   run: echo "::set-output name=server_ips::$(terraform output -raw server_ips)"
-
-      # - name: Run Ansible Playbook
-      #   env:
-      #     ANSIBLE_HOST_KEY_CHECKING: False
-      #     SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      #   run: |
-      #     echo "${SSH_PRIVATE_KEY}" > ansible_ssh_key
-      #     chmod 600 ansible_ssh_key
-      #     echo '[clients]' > dynamic_inventory
-      #     echo ${{ steps.client_ips.outputs.client_ips }} >> dynamic_inventory
-      #     echo '[servers]' >> dynamic_inventory
-      #     echo ${{ steps.server_ips.outputs.server_ips }} >> dynamic_inventory
-      #     ansible-playbook -i dynamic_inventory playbook.yml --private-key ansible_ssh_key
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook -i hosts.ini your-playbook.yml --private-key machines_ssh_key
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: False
