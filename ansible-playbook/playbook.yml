@@ -10,18 +10,11 @@
       when: hostvars[item].ansible_host is defined
       loop: "{{ groups['nomad_servers'] + groups['nomad_clients'] }}"
 
-- name: Ubuntu Server Setup
-  hosts: all
-  become: yes
-  tasks:
     - name: Update all packages
       ansible.builtin.apt:
         update_cache: yes
         upgrade: dist
 
-- name: Install necessary packages
-  hosts: all
-  tasks:
     - name: Install necessary packages
       ansible.builtin.apt:
         name:
@@ -30,7 +23,13 @@
           - curl
           - coreutils
           - jq
-        state: present
+        state: latest
+        update_cache: true
+
+    - name: UFW - Allow SSH connections
+      community.general.ufw:
+        rule: allow
+        name: OpenSSH
 # - name: Set up UFW Firewall
 #   hosts: all
 #   tasks:
