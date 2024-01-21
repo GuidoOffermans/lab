@@ -1,0 +1,6 @@
+- name: Install or update Consul
+  ansible.builtin.apt:
+    name: "consul={{ consul_version }}"
+    state: present
+  vars:
+    consul_version: "1.17.1-1"

@@ -1,0 +1,47 @@
+- name: Update the package index
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Download HashiCorp GPG key
+  ansible.builtin.get_url:
+    url: https://apt.releases.hashicorp.com/gpg
+    dest: /tmp/hashicorp.gpg
+    mode: "0644"
+
+- name: Convert GPG key to keyring format
+  ansible.builtin.shell:
+    cmd: gpg --dearmor -o /tmp/hashicorp-archive-keyring.gpg < /tmp/hashicorp.gpg
+  args:
+    creates: /tmp/hashicorp-archive-keyring.gpg
+
+- name: Move the HashiCorp keyring to the proper directory
+  ansible.builtin.copy:
+    src: /tmp/hashicorp-archive-keyring.gpg
+    dest: /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    remote_src: true
+    force: true
+    mode: "0644"
+
+- name: Add the HashiCorp repository
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+      https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+      tee /etc/apt/sources.list.d/hashicorp.list
+  args:
+    creates: /etc/apt/sources.list.d/hashicorp.list
+  register: hashicorp_repo_added
+  changed_when: "'hashicorp.list' in hashicorp_repo_added.stdout"
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install Consul
+  ansible.builtin.import_tasks:
+    file: install-consul.yml
+
+- name: Install Nomad
+  ansible.builtin.import_tasks:
+    file: install-nomad.yml

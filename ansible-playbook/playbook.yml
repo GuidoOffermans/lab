@@ -1,104 +1,15 @@
-- name: Add hosts to known_hosts file
+---
+- name: Prepare Servers
   hosts: all
-  tasks:
-    - name: Add hosts to known_hosts
-      known_hosts:
-        path: ~/.ssh/known_hosts
-        name: "{{ item }}"
-        key: "{{ hostvars[item].ansible_host }}"
-        key_options: "port=22"
-      when: hostvars[item].ansible_host is defined
-      loop: "{{ groups['nomad_servers'] + groups['nomad_clients'] }}"
+  remote_user: root
+  roles:
+    - role: common
 
-    - name: Update all packages
-      ansible.builtin.apt:
-        update_cache: yes
-        upgrade: dist
-
-    - name: Install necessary packages
-      ansible.builtin.apt:
-        name:
-          - wget
-          - gpg
-          - curl
-          - coreutils
-          - jq
-        state: latest
-        update_cache: true
-
-    - name: UFW - Allow SSH connections
-      community.general.ufw:
-        rule: allow
-        name: OpenSSH
-
-    - name: UFW - Enable and deny by default
-      community.general.ufw:
-        state: enabled
-        default: deny
-
-    - name: Check if a reboot is required.
-      ansible.builtin.stat:
-        path: /var/run/reboot-required
-        get_checksum: no
-      register: reboot_required_file
-
-    - name: Reboot the server (if required).
-      ansible.builtin.reboot:
-      when: reboot_required_file.stat.exists == true
-
-    - name: Remove dependencies that are no longer required.
-      ansible.builtin.apt:
-        autoremove: yes
-
-- name: Configure Server
+- name: Install nomad and consul
   hosts: all
-  become: yes
-  tasks:
-    - name: Update the package index
-      apt:
-        update_cache: yes
-
-    - name: Download HashiCorp GPG key
-      get_url:
-        url: https://apt.releases.hashicorp.com/gpg
-        dest: /tmp/hashicorp.gpg
-        mode: "0644"
-
-    - name: Convert GPG key to keyring format
-      ansible.builtin.shell:
-        cmd: gpg --dearmor -o /tmp/hashicorp-archive-keyring.gpg < /tmp/hashicorp.gpg
-      args:
-        creates: /tmp/hashicorp-archive-keyring.gpg
-
-    - name: Move the HashiCorp keyring to the proper directory
-      copy:
-        src: /tmp/hashicorp-archive-keyring.gpg
-        dest: /usr/share/keyrings/hashicorp-archive-keyring.gpg
-        remote_src: yes
-        force: yes
-        mode: "0644"
-
-    - name: Add the HashiCorp repository
-      ansible.builtin.shell:
-        cmd: echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list
-
-    - name: Update apt cache
-      apt:
-        update_cache: yes
-
-    - name: Install or update Consul
-      apt:
-        name: "consul={{ consul_version }}"
-        state: present
-      vars:
-        consul_version: "1.17.1-1"
-
-    - name: Install or update Nomad
-      apt:
-        name: "nomad={{ nomad_version }}"
-        state: present
-      vars:
-        nomad_version: "1.7.2-1"
+  become: true
+  roles:
+    - role: hashicorp
 # - name: Setup Specific for Nomad Servers
 #   hosts: nomad_servers
 #   become: yes

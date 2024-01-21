@@ -1,0 +1,47 @@
+---
+- name: Add hosts to known hosts
+  ansible.builtin.known_hosts:
+    path: ~/.ssh/known_hosts
+    name: "{{ item }}"
+    key: "{{ hostvars[item].ansible_host }}"
+  when: hostvars[item].ansible_host is defined
+  loop: "{{ groups['nomad_servers'] + groups['nomad_clients'] }}"
+
+- name: Update all packages
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: dist
+
+- name: Install necessary packages
+  ansible.builtin.apt:
+    name:
+      - wget
+      - gpg
+      - curl
+      - coreutils
+      - jq
+    update_cache: true
+
+- name: UFW - Allow SSH connections
+  community.general.ufw:
+    rule: allow
+    name: OpenSSH
+
+- name: UFW - Enable and deny by default
+  community.general.ufw:
+    state: enabled
+    default: deny
+
+- name: Check if a reboot is required.
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+    get_checksum: false
+  register: reboot_required_file
+
+- name: Reboot the server (if required).
+  ansible.builtin.reboot:
+  when: reboot_required_file.stat.exists
+
+- name: Remove dependencies that are no longer required.
+  ansible.builtin.apt:
+    autoremove: true
