@@ -1,6 +1,3 @@
 - name: Install or update Nomad
   ansible.builtin.apt:
-    name: "nomad={{ nomad_version }}"
-    state: present
-  vars:
-    nomad_version: "1.7.2-1"
+    name: "nomad"
