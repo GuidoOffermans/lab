@@ -10,6 +10,12 @@
   become: true
   roles:
     - role: hashicorp
+
+- name: install podman
+  hosts: nomad_clients
+  become: true
+  roles:
+    - role: podman
 # - name: Setup Specific for Nomad Servers
 #   hosts: nomad_servers
 #   become: yes
