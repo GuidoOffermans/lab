@@ -2,7 +2,7 @@ terraform {
   cloud {
     organization = "monsteralab"
     workspaces {
-      name = "MonsteraLab"
+      name = "monsteralab"
     }
   }
   required_providers {
