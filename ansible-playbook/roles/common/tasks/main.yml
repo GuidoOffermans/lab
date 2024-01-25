@@ -1,4 +1,9 @@
 ---
+- name: Debug host IP addresses
+  debug:
+    msg: "Host {{ item }} has IP address {{ hostvars[item].ansible_host }}"
+  loop: "{{ groups['nomad_servers'] + groups['nomad_clients'] }}"
+
 - name: Add hosts to known hosts
   ansible.builtin.known_hosts:
     path: ~/.ssh/known_hosts
