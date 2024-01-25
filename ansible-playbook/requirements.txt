@@ -1,0 +1,2 @@
+anisble==2.16.2
+requests==2.25.1

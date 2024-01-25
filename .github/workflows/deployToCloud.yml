@@ -47,10 +47,15 @@ jobs:
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
 
+      - name: install ansible dependencies
+        run: ansible-galaxy install -r ansible-playbook/requirements.yml
+
+      - name: Install Python dependencies
+        run: pip install -r ansible-playbook/requirements.txt
+
       - name: Run Ansible Playbook
         run: |
           cd ansible-playbook
-          ansible-galaxy collection install hetzner.hcloud
           ansible-playbook playbook.yml --private-key machines.pem
         env:
           ANSIBLE_HOST_KEY_CHECKING: False
