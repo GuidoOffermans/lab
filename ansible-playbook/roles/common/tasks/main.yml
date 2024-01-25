@@ -7,7 +7,7 @@
 - name: Add hosts to known hosts
   ansible.builtin.known_hosts:
     path: ~/.ssh/known_hosts
-    key: "{{ hostvars[item].ansible_host }}"
+    name: "{{ hostvars[item].ansible_host }}"
     key: "{{ hostvars[item].ansible_host }}"
   when: hostvars[item].ansible_host is defined
   loop: "{{ groups['nomad_servers'] + groups['nomad_clients'] }}"
