@@ -6,10 +6,9 @@
 
 - name: Add each host to the known_hosts file
   ansible.builtin.known_hosts:
-    path: ~/.ssh/known_hosts
     name: "{{ item }}"
     key: "{{ hostvars[item].ansible_host }}"
-    state: present
+    # state: present
   loop: "{{ groups['all'] }}"
 
 - name: Update all packages
