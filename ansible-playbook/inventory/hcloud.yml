@@ -3,3 +3,5 @@ api_token: "{{ lookup('env', 'HCLOUD_TOKEN') }}"
 
 keyed_groups:
   - key: labels
+    trailing_separator: false
+    separator: ""
