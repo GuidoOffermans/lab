@@ -1,5 +1,5 @@
 collections:
   - name: hetzner.hcloud
     version: 2.4.1
- - name: community.general
+  - name: community.general
     version: 8.2.0
