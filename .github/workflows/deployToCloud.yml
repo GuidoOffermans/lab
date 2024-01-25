@@ -43,7 +43,13 @@ jobs:
 
       - name: Terraform Apply
         id: apply
-        run: terraform apply -auto-approve | tee apply-output.txt
+        run: terraform apply -auto-approve
+        env:
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+
+      - name: Terraform output
+        id: output
+        run: terraform output | tee apply-output.txt
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
 
