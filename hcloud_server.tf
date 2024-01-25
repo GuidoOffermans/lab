@@ -15,7 +15,7 @@ resource "hcloud_server" "server" {
   ssh_keys    = [hcloud_ssh_key.temp_ssh_key.id, data.hcloud_ssh_key.Hetzner-cloud.id]
 
   labels = {
-    "nomad-server" = "any"
+    "nomad_server" = ""
   }
 
   network {
@@ -83,7 +83,7 @@ resource "hcloud_server" "client" {
   location    = var.location
   ssh_keys    = [hcloud_ssh_key.temp_ssh_key.id, data.hcloud_ssh_key.Hetzner-cloud.id]
   labels = {
-    "nomad-client" = "any"
+    "nomad_client" = ""
   }
 
   network {

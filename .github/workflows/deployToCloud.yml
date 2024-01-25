@@ -53,9 +53,6 @@ jobs:
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
 
-      - name: Echo Terraform Apply Output
-        run: cat apply-output.txt
-
       - name: Extract and Format Specific Outputs
         run: |
           awk '/client_ips/{flag=1; next} /]/{flag=0} flag; flag && !/\(known after apply\)/' apply-output.txt | tr -d '," +' | sort | uniq > client_ips.txt
@@ -102,7 +99,7 @@ jobs:
     needs: terraform
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Download Encrypted SSH Key
         uses: actions/download-artifact@v4
