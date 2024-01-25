@@ -2,7 +2,7 @@
 - name: Extract IP Addresses
   debug:
     msg: "IP Address of {{ item }} is {{ hostvars[item].ansible_host }}"
-  loop: "{{ hosts_list }}"
+  loop: "{{ groups['all'] }}"
 
 - name: Add each host to the known_hosts file
   ansible.builtin.known_hosts:
