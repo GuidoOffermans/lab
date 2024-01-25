@@ -1,7 +1,7 @@
 ---
 - name: Configure Client nomad.hcl
   ansible.builtin.template:
-    src: client.hcl.j2
+    src: "{{ playbook_dir }}/roles/hashicorp/templates/client.hcl.j2"
     dest: /etc/nomad.d/nomad.hcl
     owner: root
     group: root
