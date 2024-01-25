@@ -1,14 +1,14 @@
 ---
-- name: Fetch SSH key for host
-  ansible.builtin.shell:
-    cmd: ssh-keyscan -H {{ hostvars[item].ansible_host }}
-  register: ssh_key
-
-- name: Add host to known hosts
-  ansible.builtin.known_hosts:
-    path: ~/.ssh/known_hosts
-    name: "{{ hostvars[item].ansible_host }}"
-    key: "{{ ssh_key.stdout_lines[0] }}"
+- name: Manage known hosts
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Add each host to the known_hosts file
+      ansible.builtin.known_hosts:
+        name: "{{ item }}"
+        key: "{{ lookup('pipe', 'ssh-keyscan -t rsa ' + item) }}"
+        state: present
+      loop: "{{ groups['all'] }}"
 
 - name: Update all packages
   ansible.builtin.apt:
