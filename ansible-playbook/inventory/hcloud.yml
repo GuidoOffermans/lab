@@ -1,0 +1,5 @@
+plugin: hcloud
+api_token: "{{ lookup('env', 'HCLOUD_TOKEN') }}"
+
+keyed_groups:
+  - key: labels

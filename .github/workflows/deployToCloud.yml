@@ -10,7 +10,7 @@ on:
 
 jobs:
   terraform:
-    name: Run Terraform.
+    name: Deploy stack.
     runs-on: ubuntu-latest
 
     steps:
@@ -19,7 +19,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.5.7
+          terraform_version: 1.7.1
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
 
       - name: Terraform fmt
@@ -47,112 +47,10 @@ jobs:
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
 
-      - name: Terraform output
-        id: output
-        run: terraform output | tee apply-output.txt
-        env:
-          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
-
-      - name: Extract and Format Specific Outputs
-        run: |
-          awk '/client_ips/{flag=1; next} /]/{flag=0} flag; flag && !/\(known after apply\)/' apply-output.txt | tr -d '," +' | sort | uniq > client_ips.txt
-          awk '/server_ips/{flag=1; next} /]/{flag=0} flag; flag && !/\(known after apply\)/' apply-output.txt | tr -d '," +' | sort | uniq > server_ips.txt
-          echo "clients" > outputs.txt
-          cat client_ips.txt >> outputs.txt
-          echo "" >> outputs.txt
-          echo "servers" >> outputs.txt
-          cat server_ips.txt >> outputs.txt
-
-      - name: Upload Outputs as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-outputs
-          path: outputs.txt
-
-      - name: Check for machines.pem
-        id: check_file
-        run: |
-          if [ -f machines.pem ]; then
-            echo "MACHINES_PEM_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "MACHINES_PEM_EXISTS=false" >> $GITHUB_ENV
-          fi
-        shell: bash
-
-      - name: Encrypt terraforms ssh key
-        if: env.MACHINES_PEM_EXISTS == 'true'
-        run: |
-          ls -la
-          openssl aes-256-cbc -salt -in machines.pem -out machines_ssh_key.enc -k ${{ secrets.ENCRYPTION_KEY }} -pbkdf2
-
-      - name: Upload Encrypted SSH Key
-        if: env.MACHINES_PEM_EXISTS == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ssh-key
-          path: machines_ssh_key.enc
-          retention-days: 1
-
-  ansible:
-    name: Run Ansible.
-    runs-on: ubuntu-latest
-    needs: terraform
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download Encrypted SSH Key
-        uses: actions/download-artifact@v4
-        with:
-          name: ssh-key
-          path: .
-
-      - name: Decrypt SSH Key
-        run: |
-          openssl aes-256-cbc -d -in machines_ssh_key.enc -out machines_ssh_key -k ${{ secrets.ENCRYPTION_KEY }} -pbkdf2
-          chmod 600 machines_ssh_key
-
-      - name: Download Outputs
-        uses: actions/download-artifact@v4
-        with:
-          name: terraform-outputs
-          path: .
-
-      - name: Create hosts.ini
-        run: |
-          echo "Reading output IPs..."
-          clients_ips="$(awk '/clients/{flag=1; next} /servers/{flag=0} flag && !/\(known after apply\)/' outputs.txt | sort | uniq)"
-          servers_ips="$(awk '/servers/{flag=1; next} /nomad_servers/{flag=0} flag && !/\(known after apply\)/' outputs.txt | sort | uniq)"          
-
-          echo "Generating hosts.ini content..."
-          echo "[nomad_servers]" > hosts.ini
-          echo "$servers_ips" >> hosts.ini
-          echo "" >> hosts.ini
-
-          echo "[nomad_clients]" >> hosts.ini
-          echo "$clients_ips" >> hosts.ini
-          echo "" >> hosts.ini
-
-          echo "[nomad_load_balancers]" >> hosts.ini
-          echo "; nomad_lb.example.com" >> hosts.ini
-          echo "" >> hosts.ini
-
-          echo "[all:children]" >> hosts.ini
-          echo "nomad_servers" >> hosts.ini
-          echo "nomad_clients" >> hosts.ini
-          echo "" >> hosts.ini
-
-          echo "[all:vars]" >> hosts.ini
-          echo "ansible_user=root" >> hosts.ini
-
-          echo "hosts.ini created:"
-          cat hosts.ini
-          mv hosts.ini ansible-playbook/inventory/
-        shell: bash
-
       - name: Run Ansible Playbook
         run: |
-          cat ansible-playbook/inventory/hosts.ini
-          ansible-playbook -i ansible-playbook/inventory/hosts.ini ansible-playbook/playbook.yml --private-key machines_ssh_key
+          cd ansible-playbook
+          ansible-playbook playbook.yml --private-key machines.pem
         env:
           ANSIBLE_HOST_KEY_CHECKING: False
+          HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
