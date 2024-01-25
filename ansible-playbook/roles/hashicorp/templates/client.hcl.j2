@@ -1,0 +1,17 @@
+data_dir = "/opt/nomad/data"
+datacenter = "dc1"
+
+bind_addr = "0.0.0.0"
+
+client {
+  enabled = false
+  servers = "{{ server_ips }}"
+}
+
+server {
+  enabled = false
+}
+
+ui {
+  enabled = false
+}

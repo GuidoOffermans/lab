@@ -1,16 +1,4 @@
 ---
-# - name: Extract IP Addresses
-#   debug:
-#     msg: "IP Address of {{ item }} is {{ hostvars[item].ansible_host }}"
-#   loop: "{{ groups['all'] }}"
-
-# - name: Add each host to the known_hosts file
-#   ansible.builtin.known_hosts:
-#     name: "{{ hostvars[item].ansible_host }}"
-#     key: "{{ hostvars[item].ansible_host }}"
-#     # state: present
-#   loop: "{{ groups['all'] }}"
-
 - name: Update all packages
   ansible.builtin.apt:
     update_cache: true
