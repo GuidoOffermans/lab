@@ -1,16 +1,14 @@
 ---
-- name: Debug host IP addresses
-  debug:
-    msg: "Host {{ item }} has IP address {{ hostvars[item].ansible_host }}"
-  loop: "{{ groups['nomad_servers'] + groups['nomad_clients'] }}"
+- name: Fetch SSH key for host
+  ansible.builtin.shell:
+    cmd: ssh-keyscan -H {{ hostvars[item].ansible_host }}
+  register: ssh_key
 
-- name: Add hosts to known hosts
+- name: Add host to known hosts
   ansible.builtin.known_hosts:
     path: ~/.ssh/known_hosts
     name: "{{ hostvars[item].ansible_host }}"
-    key: "{{ hostvars[item].ansible_host }}"
-  when: hostvars[item].ansible_host is defined
-  loop: "{{ groups['nomad_servers'] + groups['nomad_clients'] }}"
+    key: "{{ ssh_key.stdout_lines[0] }}"
 
 - name: Update all packages
   ansible.builtin.apt:
