@@ -5,7 +5,7 @@ bind_addr = "0.0.0.0"
 
 client {
   enabled = false
-  servers = "{{ server_ips }}"
+  servers = [{{ server_ips | join('", "') }}]
 }
 
 server {
