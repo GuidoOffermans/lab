@@ -47,6 +47,11 @@ jobs:
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
 
+      - name: ansible version
+        run: 
+          ansible --version
+          python --version
+
       - name: Run Ansible Playbook
         run: |
           cd ansible-playbook
