@@ -54,7 +54,7 @@ jobs:
         run: |
           cd ansible-playbook && python -m venv playbook-venv
           source playbook-venv/bin/activate
-          pip install -r ansible-playbook/requirements.txt
+          pip install -r requirements.txt
 
       - name: Run Ansible Playbook
         run: |
