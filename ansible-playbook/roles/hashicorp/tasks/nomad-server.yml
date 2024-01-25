@@ -1,7 +1,7 @@
 ---
 - name: Configure Client nomad.hcl
   ansible.builtin.template:
-    src: templates/client.hcl.j2
+    src: client.hcl.j2
     dest: /etc/nomad.d/nomad.hcl
     owner: root
     group: root
