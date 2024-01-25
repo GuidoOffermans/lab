@@ -47,6 +47,8 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
+        env:
+          TFE_TOKEN: ${{ secrets.TFE_TOKEN }}
 
       - name: Terraform Validate
         id: validate
@@ -57,12 +59,14 @@ jobs:
         run: terraform plan
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          TFE_TOKEN: ${{ secrets.TFE_TOKEN }}
 
       - name: Terraform Apply
         id: apply
         run: terraform apply -auto-approve | tee apply-output.txt
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          TFE_TOKEN: ${{ secrets.TFE_TOKEN }}
 
       - name: Upload Terraform State with rsync
         run: |
