@@ -6,7 +6,7 @@
 
 - name: Add each host to the known_hosts file
   ansible.builtin.known_hosts:
-    name: "{{ item }}"
+    name: "{{ hostvars[item].ansible_host }}"
     key: "{{ hostvars[item].ansible_host }}"
     # state: present
   loop: "{{ groups['all'] }}"
