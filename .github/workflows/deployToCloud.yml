@@ -27,22 +27,22 @@ jobs:
         run: terraform fmt -check
         continue-on-error: true
 
-      - name: Setup SSH Key
-        run: |
-          echo "${{ secrets.HETZNER_BOX_KEY }}" > hetzner_box_key
-          chmod 600 hetzner_box_key
+      # - name: Setup SSH Key
+      #   run: |
+      #     echo "${{ secrets.HETZNER_BOX_KEY }}" > hetzner_box_key
+      #     chmod 600 hetzner_box_key
 
-      - name: Setup SSH Known Hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -p 23 -H ${{ secrets.HETZNER_BOX_HOST }} >> ~/.ssh/known_hosts
+      # - name: Setup SSH Known Hosts
+      #   run: |
+      #     mkdir -p ~/.ssh
+      #     ssh-keyscan -p 23 -H ${{ secrets.HETZNER_BOX_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Download Terraform State with rsync
-        run: |
-          rsync -avz -e "ssh -i hetzner_box_key -p23" ${USER}@${HOST}:./terraform.tfstate .
-        env:
-          USER: ${{ secrets.HETZNER_BOX_USER }}
-          HOST: ${{ secrets.HETZNER_BOX_HOST }}
+      # - name: Download Terraform State with rsync
+      #   run: |
+      #     rsync -avz -e "ssh -i hetzner_box_key -p23" ${USER}@${HOST}:./terraform.tfstate .
+      #   env:
+      #     USER: ${{ secrets.HETZNER_BOX_USER }}
+      #     HOST: ${{ secrets.HETZNER_BOX_HOST }}
 
       - name: Terraform Init
         id: init
@@ -64,12 +64,12 @@ jobs:
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
 
-      - name: Upload Terraform State with rsync
-        run: |
-          rsync -avz -e "ssh -i hetzner_box_key -p23" ./terraform.tfstate ${USER}@${HOST}:./
-        env:
-          USER: ${{ secrets.HETZNER_BOX_USER }}
-          HOST: ${{ secrets.HETZNER_BOX_HOST }}
+      # - name: Upload Terraform State with rsync
+      #   run: |
+      #     rsync -avz -e "ssh -i hetzner_box_key -p23" ./terraform.tfstate ${USER}@${HOST}:./
+      #   env:
+      #     USER: ${{ secrets.HETZNER_BOX_USER }}
+      #     HOST: ${{ secrets.HETZNER_BOX_HOST }}
 
       - name: Echo Terraform Apply Output
         run: cat apply-output.txt
