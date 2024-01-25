@@ -1,14 +1,10 @@
 ---
-- name: Manage known hosts
-  hosts: localhost
-  gather_facts: no
-  tasks:
-    - name: Add each host to the known_hosts file
-      ansible.builtin.known_hosts:
-        name: "{{ item }}"
-        key: "{{ lookup('pipe', 'ssh-keyscan -t rsa ' + item) }}"
-        state: present
-      loop: "{{ groups['all'] }}"
+- name: Add each host to the known_hosts file
+  ansible.builtin.known_hosts:
+    name: "{{ item }}"
+    key: "{{ lookup('pipe', 'ssh-keyscan -t rsa ' + item) }}"
+    state: present
+  loop: "{{ groups['all'] }}"
 
 - name: Update all packages
   ansible.builtin.apt:
