@@ -47,14 +47,10 @@ jobs:
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
 
-      - name: ansible version
-        run: 
-          ansible --version
-          python --version
-
       - name: Run Ansible Playbook
         run: |
           cd ansible-playbook
+          ansible-galaxy collection install hetzner.hcloud
           ansible-playbook playbook.yml --private-key machines.pem
         env:
           ANSIBLE_HOST_KEY_CHECKING: False
