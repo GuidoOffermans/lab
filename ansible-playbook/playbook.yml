@@ -15,11 +15,11 @@
   hosts: nomad_clients
   remote_user: root
   tasks:
-    - name: Log server IPs
-      ansible.builtin.debug:
-        msg: "Server IPs are: {{ server_ips }}"
     - name: Configure client nomad.hcl
       ansible.builtin.import_tasks: roles/hashicorp/tasks/nomad-server.yml
+    - name: Validate client consul.hcl
+      ansible.builtin.command: nomad config validate /etc/nomad.d/nomad.hcl
+      changed_when: false
 
 - name: Install podman
   hosts: nomad_clients
