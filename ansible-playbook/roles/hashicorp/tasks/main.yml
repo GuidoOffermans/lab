@@ -43,17 +43,10 @@
   ansible.builtin.apt_repository:
     repo: "deb [arch={{ ansible_architecture }}] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
     state: present
-    filename: hashicorp
-    update_cache: yes
 
-- name: Update apt cache
+- name: Install or update Consul
   ansible.builtin.apt:
-    update_cache: true
-
-- name: Install Consul
-  ansible.builtin.import_tasks:
-    file: install-consul.yml
-
-- name: Install Nomad
-  ansible.builtin.import_tasks:
-    file: install-nomad.yml
+    name:
+      - nomad
+      - consul
+    update_cache: yes
