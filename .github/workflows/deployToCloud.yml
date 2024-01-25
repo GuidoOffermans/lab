@@ -52,9 +52,16 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          cd ansible-playbook && python -m venv playbook-venv
+          cd ansible-playbook 
+          python -m venv playbook-venv
           source playbook-venv/bin/activate
           pip install -r requirements.txt
+
+      - name: install ansible dependencies
+        run: |
+          cd ansible-playbook 
+          source playbook-venv/bin/activate
+          ansible-galaxy install -r ansible-playbook/requirements.yml
 
       - name: Run Ansible Playbook
         run: |
@@ -65,5 +72,5 @@ jobs:
           python --version
           ansible-playbook playbook.yml --private-key machines.pem -e ansible_python_interpreter=./playbook-venv/bin/python
         env:
-          ANSIBLE_HOST_KEY_CHECKING: False  
+          ANSIBLE_HOST_KEY_CHECKING: False
           HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
