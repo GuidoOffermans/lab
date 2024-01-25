@@ -67,7 +67,7 @@ jobs:
         run: |
           cd ansible-playbook
           source playbook-venv/bin/activate
-          ansible-playbook playbook.yml --private-key ../machines.pem -e ansible_python_interpreter=./playbook-venv/bin/python
+          ansible-playbook playbook.yml --private-key ../machines.pem
         env:
           ANSIBLE_HOST_KEY_CHECKING: False
           HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
