@@ -1,3 +1,0 @@
-- name: Install or update Nomad
-  ansible.builtin.apt:
-    name: "nomad"
