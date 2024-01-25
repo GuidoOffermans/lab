@@ -14,8 +14,6 @@
 - name: Configure Nomad clients
   hosts: nomad_clients
   remote_user: root
-  vars:
-    server_ips: "{{ groups['nomad_servers'] | map('extract', hostvars, 'ansible_default_ipv4') | map(attribute='address') | join(',') }}"
   tasks:
     - name: Log server IPs
       ansible.builtin.debug:
