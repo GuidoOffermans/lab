@@ -5,6 +5,12 @@
   roles:
     - role: common
 
+- name: Gather internal nomad server ips
+  hosts: nomad_servers
+  remote_user: root
+  ansible.builtin.set_fact:
+    server_ips: "{{ ansible_facts['all_ipv4_addresses'] | select('match', '^10\\.0\\.0\\.\\d+$') | list }}"
+
 - name: Install and Configure Nomad
   hosts:
     - nomad_servers

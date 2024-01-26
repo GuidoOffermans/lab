@@ -4,11 +4,6 @@
     name: nomad
     update_cache: true
 
-- name: Gather internal nomad server ips
-  ansible.builtin.set_fact:
-    server_ips: "{{ ansible_facts['all_ipv4_addresses'] | select('match', '^10\\.0\\.0\\.\\d+$') | list }}"
-  when: "'nomad_servers' in group_names"
-
 - name: Configure Client nomad.hcl
   ansible.builtin.template:
     src: client.hcl.j2
