@@ -21,6 +21,7 @@
 
 - name: Get Internal IP Addresses of Nomad Servers
   hosts: nomad_servers
+  remote_user: root
   gather_facts: true
 
   tasks:
