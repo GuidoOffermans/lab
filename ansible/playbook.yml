@@ -1,17 +1,4 @@
 ---
-- name: Get Internal IP Addresses
-  hosts: nomad_servers
-  remote_user: root
-  gather_facts: true
-
-  tasks:
-    - name: Print all available facts 1
-      ansible.builtin.debug:
-        var: ansible_facts['all_ipv4_addresses']
-    - name: Print all available facts 2
-      ansible.builtin.debug:
-        var: ansible_facts['all_ipv4_addresses'] | select("match", "^10\.0\.0\.\d+$") | list
-
 - name: Prepare Servers
   hosts: all
   remote_user: root

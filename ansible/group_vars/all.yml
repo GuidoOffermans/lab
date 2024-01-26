@@ -1,1 +1,1 @@
-server_ips: "{{ groups['nomad_servers'] | map('extract', hostvars, 'ansible_default_ipv4') | map(attribute='address') | map('quote') | list }}"
+# server_ips: "{{ groups['nomad_servers'] | map('extract', hostvars, 'ansible_default_ipv4') | map(attribute='address') | map('quote') | list }}"
