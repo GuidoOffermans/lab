@@ -18,3 +18,17 @@
   remote_user: root
   roles:
     - role: podman
+
+- name: Get Internal IP Addresses of Nomad Servers
+  hosts: nomad_servers
+  gather_facts: true
+
+  tasks:
+    - name: Extract Internal IP Addresses
+      ansible.builtin.set_fact:
+        server_internal_ips: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
+      delegate_to: localhost
+
+    - name: Display Internal IP Addresses
+      ansible.builtin.debug:
+        var: server_internal_ips
