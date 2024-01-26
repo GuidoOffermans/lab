@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  terraform:
+  deploy:
     name: Deploy stack.
     runs-on: ubuntu-latest
 
@@ -26,49 +26,55 @@ jobs:
         id: fmt
         run: terraform fmt -check
         continue-on-error: true
+        working-directory: ./terraform
 
       - name: Terraform Init
         id: init
         run: terraform init
+        working-directory: ./terraform
 
       - name: Terraform Validate
         id: validate
         run: terraform validate
+        working-directory: ./terraform
 
       - name: Terraform Plan
         id: plan
         run: terraform plan
+        working-directory: ./terraform
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
 
       - name: Terraform Apply
         id: apply
         run: terraform apply -auto-approve
+        working-directory: ./terraform
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
 
       - name: install ansible dependencies
-        run: ansible-galaxy install -r ansible-playbook/requirements.yml
+        run: ansible-galaxy install -r requirements.yml
+        working-directory: ./ansible
 
       - name: Install Python dependencies
         run: |
-          cd ansible-playbook 
           python -m venv playbook-venv
           source playbook-venv/bin/activate
           pip install -r requirements.txt
+        working-directory: ./ansible
 
       - name: install ansible dependencies
         run: |
-          cd ansible-playbook 
           source playbook-venv/bin/activate
           ansible-galaxy install -r requirements.yml
+        working-directory: ./ansible
 
       - name: Run Ansible Playbook
         run: |
-          cd ansible-playbook
           source playbook-venv/bin/activate
           ansible-inventory --graph
-          ansible-playbook playbook.yml --private-key ../machines.pem
+          ansible-playbook playbook.yml --private-key ../terraform/machines.pem
+        working-directory: ./ansible
         env:
           ANSIBLE_HOST_KEY_CHECKING: False
           HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
