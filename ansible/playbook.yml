@@ -7,10 +7,12 @@
 
 - name: Initialize empty list for server IPs
   hosts: localhost
+  gather_facts: false
   tasks:
     - name: Initialize empty list for server IPs
       ansible.builtin.set_fact:
         server_ips: []
+        cacheable: true
 
 - name: Gather internal nomad server ips
   hosts: nomad_servers
@@ -20,10 +22,12 @@
     - name: Append IP address of each server
       ansible.builtin.set_fact:
         server_ips: "{{ server_ips + ansible_facts['all_ipv4_addresses'] | select('match', '^10\\.0\\.0\\.\\d+$') }}"
-        # server_ips: "{{ ansible_facts['all_ipv4_addresses'] | select('match', '^10\\.0\\.0\\.\\d+$') | list }}"
+        cacheable: true
+      # delegate_to: localhost
 
 - name: Display all server IPs
   hosts: localhost
+  gather_facts: false
   tasks:
     - name: Display all server IPs
       ansible.builtin.debug:
