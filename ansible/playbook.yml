@@ -1,4 +1,14 @@
 ---
+- name: Get Internal IP Addresses
+  hosts: nomad_servers
+  remote_user: root
+  gather_facts: true
+
+  tasks:
+    - name: Filter Internal IP Addresses
+      ansible.builtin.debug:
+        var: ansible_facts['ansible_all_ipv4_addresses']
+
 - name: Prepare Servers
   hosts: all
   remote_user: root
@@ -18,13 +28,3 @@
   remote_user: root
   roles:
     - role: podman
-
-- name: Get Internal IP Addresses
-  hosts: nomad_servers
-  remote_user: root
-  gather_facts: yes
-
-  tasks:
-    - name: Filter Internal IP Addresses
-      debug:
-        var: ansible_facts['ansible_all_ipv4_addresses'] | select("match", "^10\.0\.0\.\d+$") | list
