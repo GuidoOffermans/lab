@@ -11,15 +11,25 @@
   roles:
     - role: hashicorp
 
-- name: Configure Nomad clients
+- name: Configure Nomad servers
+  hosts: nomad_servers
+  remote_user: root
+  tasks:
+    - name: Configure server nomad.hcl
+      ansible.builtin.import_tasks: roles/hashicorp/tasks/configure-nomad-server.yml
+    - name: Validate server nomad.hcl
+      ansible.builtin.command: nomad config validate /etc/nomad.d/nomad.hcl
+      changed_when: false
+
+- name: Configure Nomad Clients
   hosts: nomad_clients
   remote_user: root
   tasks:
     - name: Configure client nomad.hcl
-      ansible.builtin.import_tasks: roles/hashicorp/tasks/nomad-server.yml
-    - name: Validate client consul.hcl
+      ansible.builtin.import_tasks: roles/hashicorp/tasks/configure-nomad-client.yml
+    - name: Validate client nomad.hcl
       ansible.builtin.command: nomad config validate /etc/nomad.d/nomad.hcl
-      changed_when: false 
+      changed_when: false
 
 - name: Install podman
   hosts: nomad_clients

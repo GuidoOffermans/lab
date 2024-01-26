@@ -19,6 +19,5 @@
       - nomad
       - consul
     update_cache: true
-
-- name: Include Nomad server configuration tasks
-  ansible.builtin.include_tasks: nomad-server.yml
+# - name: Include Nomad server configuration tasks
+#   ansible.builtin.include_tasks: nomad-server.yml
