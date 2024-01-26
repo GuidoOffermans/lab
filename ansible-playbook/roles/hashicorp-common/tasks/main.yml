@@ -12,12 +12,3 @@
   ansible.builtin.apt_repository:
     repo: "deb [arch=arm64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
     state: present
-
-- name: Install or update Consul
-  ansible.builtin.apt:
-    name:
-      - nomad
-      - consul
-    update_cache: true
-# - name: Include Nomad server configuration tasks
-#   ansible.builtin.include_tasks: nomad-server.yml

@@ -1,0 +1,27 @@
+---
+- name: Install Nomad
+  ansible.builtin.apt:
+    name: nomad
+    update_cache: true
+
+- name: Configure Client nomad.hcl
+  ansible.builtin.template:
+    src: client.hcl.j2"
+    dest: /etc/nomad.d/nomad.hcl
+    owner: root
+    group: root
+    mode: "0644"
+  when: "'nomad_clients' in group_names"
+
+- name: Configure Server nomad.hcl
+  ansible.builtin.template:
+    src: server.hcl.j2"
+    dest: /etc/nomad.d/nomad.hcl
+    owner: root
+    group: root
+    mode: "0644"
+  when: "'nomad_servers' in group_names"
+
+- name: Validate nomad.hcl
+  ansible.builtin.command: nomad config validate /etc/nomad.d/nomad.hcl
+  changed_when: false
