@@ -29,3 +29,39 @@
 - name: Validate nomad.hcl
   ansible.builtin.command: nomad config validate /etc/nomad.d/nomad.hcl
   changed_when: false
+
+- name: Allow HTTP (4646/TCP) for UI and API access
+  community.general.ufw:
+    rule: allow
+    port: 4646
+    proto: tcp
+
+- name: Allow RPC (4647/TCP)
+  community.general.ufw:
+    rule: allow
+    port: 4647
+    proto: tcp
+
+- name: Allow Serf Gossip (4648/TCP and UDP)
+  community.general.ufw:
+    rule: allow
+    port: 4648
+    proto: "{{ item }}"
+  loop:
+    - tcp
+    - udp
+  when: "'nomad_servers' in group_names"
+
+- name: Enable and start nomad servers
+  ansible.builtin.service:
+    name: nomad
+    state: started
+    enabled: true
+  when: "'nomad_servers' in group_names"
+
+- name: Enable and start nomad clients
+  ansible.builtin.service:
+    name: nomad
+    state: started
+    enabled: true
+  when: "'nomad_clients' in group_names"
