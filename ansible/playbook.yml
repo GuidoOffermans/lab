@@ -27,7 +27,7 @@
   tasks:
     - name: Extract Internal IP Addresses
       ansible.builtin.set_fact:
-        server_internal_ips: "{{ ansible_all_ipv4_addresses | ipaddr('10.0.0.0/8') | first }}"
+        server_internal_ips: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
       delegate_to: localhost
 
     - name: Display Internal IP Addresses
