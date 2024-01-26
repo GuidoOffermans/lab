@@ -5,11 +5,29 @@
   roles:
     - role: common
 
+- name: Initialize empty list for server IPs
+  hosts: localhost
+  tasks:
+    - name: Initialize empty list for server IPs
+      ansible.builtin.set_fact:
+        server_ips: []
+
 - name: Gather internal nomad server ips
   hosts: nomad_servers
+  gather_facts: true
   remote_user: root
-  ansible.builtin.set_fact:
-    server_ips: "{{ ansible_facts['all_ipv4_addresses'] | select('match', '^10\\.0\\.0\\.\\d+$') | list }}"
+  tasks:
+    - name: Append IP address of each server
+      ansible.builtin.set_fact:
+        server_ips: "{{ server_ips + ansible_facts['all_ipv4_addresses'] | select('match', '^10\\.0\\.0\\.\\d+$') }}"
+        # server_ips: "{{ ansible_facts['all_ipv4_addresses'] | select('match', '^10\\.0\\.0\\.\\d+$') | list }}"
+
+- name: Display all server IPs
+  hosts: localhost
+  tasks:
+    - name: Display all server IPs
+      ansible.builtin.debug:
+        msg: "Server IPs: {{ server_ips }}"
 
 - name: Install and Configure Nomad
   hosts:
